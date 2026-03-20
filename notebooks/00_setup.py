@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.1.0"
+__generated_with = "0.21.1"
 app = marimo.App()
 
 
@@ -42,6 +42,11 @@ def _():
     print(f"Model hidden dim: {config.model.hidden_dim}")
     print(f"Model layers: {config.model.num_layers}")
     print(f"Diffusion steps: {config.diffusion.num_steps}")
+    return
+
+
+@app.cell
+def _():
     return
 
 
