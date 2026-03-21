@@ -18,10 +18,6 @@ def _():
                 sys.path.insert(0, candidate_str)
             break
 
-    from src.config.schema import DatasetConfig
-    from src.store import DatasetStore
-
-    dataset_store = DatasetStore()
     source_name = mo.ui.dropdown(
         options=["tinystories"],
         value="tinystories",
@@ -40,6 +36,14 @@ def _():
         value=0.9,
         label="Train split",
     )
+    mo.vstack([source_name, tokenizer_name, seq_len, train_split])
+    return mo, seq_len, source_name, tokenizer_name, train_split
+
+
+@app.cell
+def _(mo, seq_len, source_name, tokenizer_name, train_split):
+    from src.config.schema import DatasetConfig
+
     config = DatasetConfig(
         source_name=source_name.value,
         tokenizer_name=tokenizer_name.value,
@@ -47,7 +51,7 @@ def _():
         train_split=float(train_split.value),
         val_split=round(1 - float(train_split.value), 2),
     )
-    preview = mo.md(
+    config_preview = mo.md(
         f"""
         ## Prepared dataset configuration
         - Dataset ID: `{config.source_name}_seq{config.seq_len}_{config.tokenizer_name}`
@@ -55,17 +59,26 @@ def _():
         - Val split: `{config.val_split:.2f}`
         """
     )
-    mo.vstack([source_name, tokenizer_name, seq_len, train_split, preview])
-    return config, dataset_store, mo
+    config_preview
+    return (config,)
 
 
 @app.cell
-def _(config, dataset_store, mo):
+def _(mo):
+    from src.store import DatasetStore
+
     action = mo.ui.run_button(label="Prepare dataset")
+    action
+    return (action,)
+
+
+@app.cell
+def _(action, config, dataset_store, mo):
     dataset = dataset_store.create_prepared_dataset(config) if action.value else None
-    content = [action]
-    if dataset is not None:
-        content.extend(
+    content = (
+        mo.md("Press `Prepare dataset` to build an artifact.")
+        if dataset is None
+        else mo.vstack(
             [
                 mo.md("## Prepared artifact"),
                 mo.ui.table(
@@ -80,7 +93,8 @@ def _(config, dataset_store, mo):
                 ),
             ]
         )
-    mo.vstack(content)
+    )
+    content
     return
 
 

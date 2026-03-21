@@ -10,7 +10,6 @@ def _():
     from pathlib import Path
 
     import marimo as mo
-    import torch
 
     for candidate in (Path.cwd(), *Path.cwd().parents):
         if (candidate / "pyproject.toml").exists() and (candidate / "src").exists():
@@ -19,13 +18,9 @@ def _():
                 sys.path.insert(0, candidate_str)
             break
 
-    from src.config.io import load_experiment_config
-    from src.sampling.sampler import DiffusionSampler
     from src.store import RunStore
-    from src.tokenization.tokenizer import Tokenizer
 
-    run_store = RunStore()
-    run_options = [run.run_id for run in run_store.list_runs()] or ["none"]
+    run_options = [run.run_id for run in RunStore().list_runs()] or ["none"]
     run_id = mo.ui.dropdown(options=run_options, value=run_options[0], label="Run")
     prompt = mo.ui.text(value="Once upon a time", label="Prompt")
     num_tokens = mo.ui.number(value=32, start=1, stop=256, label="New tokens")
@@ -37,22 +32,37 @@ def _():
         label="Temperature",
     )
     action = mo.ui.run_button(label="Generate")
+    mo.vstack([run_id, prompt, num_tokens, temperature, action])
+    return action, num_tokens, prompt, run_id, temperature
+
+
+@app.cell
+def _(action, num_tokens, prompt, run_id, temperature):
+    from pathlib import Path as _Path
+
+    import marimo as _mo
+    import torch
+
+    from src.config.io import load_experiment_config
+    from src.sampling.sampler import DiffusionSampler
+    from src.store import RunStore as _RunStore
+    from src.tokenization.tokenizer import Tokenizer
+
     rows = []
     if action.value and run_id.value != "none":
-        run = run_store.get(run_id.value)
+        run = _RunStore().get(run_id.value)
         checkpoint = run.latest_checkpoint or run.best_checkpoint
         if checkpoint is not None:
             sampler = DiffusionSampler.from_checkpoint(checkpoint)
             config = load_experiment_config(run.config_path)
-            tokenizer_path = (
-                Path("artifacts")
+            tokenizer = Tokenizer.from_file(
+                _Path("artifacts")
                 / "datasets"
                 / config.dataset.source_name
                 / "prepared"
                 / run.dataset_id
                 / "tokenizer.json"
             )
-            tokenizer = Tokenizer.from_file(tokenizer_path)
             prompt_tokens = torch.tensor(
                 [tokenizer.encode(prompt.value)],
                 dtype=torch.long,
@@ -69,7 +79,13 @@ def _():
                         "preview": tokenizer.decode(step.tokens[0].tolist())[:160],
                     }
                 )
-    mo.vstack([run_id, prompt, num_tokens, temperature, action, mo.ui.table(rows)])
+
+    output = (
+        _mo.md("Press `Generate` to sample from the selected run.")
+        if not rows
+        else _mo.ui.table(rows)
+    )
+    output
     return
 
 

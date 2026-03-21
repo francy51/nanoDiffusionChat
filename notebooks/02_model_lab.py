@@ -10,7 +10,6 @@ def _():
     from pathlib import Path
 
     import marimo as mo
-    import torch
 
     for candidate in (Path.cwd(), *Path.cwd().parents):
         if (candidate / "pyproject.toml").exists() and (candidate / "src").exists():
@@ -19,17 +18,29 @@ def _():
                 sys.path.insert(0, candidate_str)
             break
 
-    from src.config.presets import build_experiment_config, list_presets
-    from src.models.factory import build_model_from_experiment
+    from src.config.presets import list_presets
 
     preset = mo.ui.dropdown(options=list_presets(), value="tiny", label="Preset")
+    preset
+    return mo, preset
+
+
+@app.cell
+def _(mo, preset):
+    import torch
+
+
+
+    from src.config.presets import build_experiment_config
+    from src.models.factory import build_model_from_experiment
+
     config = build_experiment_config(preset.value)
     model = build_model_from_experiment(config)
     sample_len = min(config.dataset.seq_len, 32)
     tokens = torch.randint(0, config.model.vocab_size, (2, sample_len))
     timesteps = torch.randint(0, config.diffusion.num_steps, (2,))
     logits = model(tokens, timesteps)
-    summary = mo.ui.table(
+    mo.ui.table(
         [
             {
                 "preset": preset.value,
@@ -42,7 +53,11 @@ def _():
             }
         ]
     )
-    mo.vstack([preset, summary])
+    return
+
+
+@app.cell
+def _():
     return
 
 

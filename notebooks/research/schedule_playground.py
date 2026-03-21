@@ -10,7 +10,6 @@ def _():
     from pathlib import Path
 
     import marimo as mo
-    import torch
 
     for candidate in (Path.cwd(), *Path.cwd().parents):
         if (candidate / "pyproject.toml").exists() and (candidate / "src").exists():
@@ -19,13 +18,22 @@ def _():
                 sys.path.insert(0, candidate_str)
             break
 
-    from src.diffusion.schedule import get_mask_probability
-
     schedule = mo.ui.dropdown(
         options=["uniform", "linear", "cosine"],
         value="linear",
         label="Schedule",
     )
+    schedule
+    return schedule
+
+
+@app.cell
+def _(schedule):
+    import marimo as _mo
+    import torch
+
+    from src.diffusion.schedule import get_mask_probability
+
     t = torch.linspace(0.0, 1.0, 8)
     rows = [
         {"t": float(value), "mask_prob": float(prob)}
@@ -35,7 +43,7 @@ def _():
             strict=True,
         )
     ]
-    mo.vstack([schedule, mo.ui.table(rows)])
+    _mo.ui.table(rows)
     return
 
 
