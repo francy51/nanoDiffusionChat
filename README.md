@@ -1,31 +1,33 @@
 # nanoDiffusionChat
 
-A small diffusion language model implementation using masked discrete diffusion.
+Notebook-first diffusion language-model playground with a local experiment store.
 
 ## Quick Start
 
 ```bash
-# Install dependencies
 uv sync --extra dev
-
-# Run the setup notebook
-uv run marimo edit notebooks/00_setup.py
+uv run marimo edit notebooks/00_home.py
 ```
 
-## Project Structure
+Primary workflow notebooks:
+- `notebooks/01_data_lab.py`
+- `notebooks/02_model_lab.py`
+- `notebooks/03_train_lab.py`
+- `notebooks/04_sample_lab.py`
+- `notebooks/05_eval_lab.py`
+- `notebooks/06_runs_dashboard.py`
 
-- `src/` - Core library modules (config, data, diffusion, models, training, sampling)
-- `notebooks/` - Marimo notebooks for the complete workflow
-- `tests/` - Test suite
-- `docs/` - Documentation
+## Repo Shape
+
+- `src/` reusable core library
+- `notebooks/` Marimo UI workflows
+- `scripts/` thin headless wrappers
+- `artifacts/` datasets, runs, exports
+- `tests/` unit and integration coverage
 
 ## Documentation
 
-- [Architecture](docs/architecture.md) - System design and components
-- [Technology Choices](docs/technology_choices.md) - Framework decisions
-- [Quick Reference](docs/quick_reference.md) - Commands and tensor shapes
-- [Roadmap](docs/roadmap.md) - Development phases
-
-## License
-
-MIT
+- [Architecture](docs/architecture.md)
+- [Artifact Store](docs/artifact_store.md)
+- [Quick Reference](docs/quick_reference.md)
+- [Technology Choices](docs/technology_choices.md)

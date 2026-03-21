@@ -4,3 +4,6 @@ if TYPE_CHECKING:
     from src.sampling.sampler import DiffusionSampler
 
 __all__ = ["DiffusionSampler"]
+from src.sampling.sampler import DiffusionSampler
+
+__all__ = ["DiffusionSampler"]

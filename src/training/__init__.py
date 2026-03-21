@@ -1,7 +1,4 @@
-from typing import TYPE_CHECKING
+from src.training.loop import Trainer
+from src.training.metrics import EvalMetrics, TrainStepMetrics
 
-if TYPE_CHECKING:
-    from src.training.loss import masked_cross_entropy
-    from src.training.trainer import Trainer
-
-__all__ = ["Trainer", "masked_cross_entropy"]
+__all__ = ["EvalMetrics", "TrainStepMetrics", "Trainer"]

@@ -3,44 +3,31 @@ from typing import Literal
 import torch
 from torch import Tensor
 
-
-def get_mask_probability(
-    t: Tensor,
-    schedule: Literal["linear", "cosine", "uniform"] = "uniform",
-) -> Tensor:
-    if schedule == "linear":
-        return t
-    elif schedule == "cosine":
-        return 0.5 * (1 - torch.cos(torch.pi * t))
-    elif schedule == "uniform":
-        return torch.rand_like(t)
-    else:
-        raise ValueError(f"Unknown schedule: {schedule}")
+ScheduleName = Literal["uniform", "linear", "cosine"]
 
 
 def sample_timesteps(batch_size: int, num_steps: int, device: str = "cpu") -> Tensor:
+    if batch_size <= 0:
+        raise ValueError(f"batch_size must be positive, got {batch_size}")
+    if num_steps <= 0:
+        raise ValueError(f"num_steps must be positive, got {num_steps}")
     return torch.randint(0, num_steps, (batch_size,), device=device)
 
 
-def corrupt_tokens(
-    tokens: Tensor,
-    mask_prob: float | Tensor,
-    mask_token_id: int,
-) -> tuple[Tensor, Tensor]:
-    assert tokens.dim() == 2, f"Expected 2D tensor, got {tokens.dim()}D"
+def normalize_timesteps(timesteps: Tensor, num_steps: int) -> Tensor:
+    if num_steps <= 1:
+        return torch.zeros_like(timesteps, dtype=torch.float32)
+    return timesteps.float() / float(num_steps - 1)
 
-    batch_size, seq_len = tokens.shape
 
-    if isinstance(mask_prob, float):
-        mask_prob_tensor = torch.full((batch_size,), mask_prob, device=tokens.device)
-    else:
-        mask_prob_tensor = mask_prob
-
-    mask = torch.rand(
-        batch_size, seq_len, device=tokens.device
-    ) < mask_prob_tensor.unsqueeze(1)
-
-    corrupted = tokens.clone()
-    corrupted[mask] = mask_token_id
-
-    return corrupted, mask
+def get_mask_probability(
+    t: Tensor,
+    schedule: ScheduleName = "uniform",
+) -> Tensor:
+    if schedule == "linear":
+        return t
+    if schedule == "cosine":
+        return 0.5 * (1 - torch.cos(torch.pi * t))
+    if schedule == "uniform":
+        return torch.rand_like(t)
+    raise ValueError(f"Unknown schedule: {schedule}")
