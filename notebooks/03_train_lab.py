@@ -30,7 +30,7 @@ def _():
         value=dataset_options[0],
         label="Dataset",
     )
-    steps = mo.ui.number(value=10, start=1, stop=5000, label="Training steps")
+    steps = mo.ui.number(value=10, start=1, stop=1_000_000, label="Training steps")
     train_action = mo.ui.run_button(label="Create run and train")
     mo.vstack(
         [
