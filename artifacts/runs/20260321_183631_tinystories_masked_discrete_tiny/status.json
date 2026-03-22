@@ -1,0 +1,7 @@
+{
+  "best_checkpoint": null,
+  "latest_checkpoint": "artifacts/runs/20260321_183631_tinystories_masked_discrete_tiny/checkpoints/last.pt",
+  "run_id": "20260321_183631_tinystories_masked_discrete_tiny",
+  "state": "checkpointed",
+  "step": 5000
+}

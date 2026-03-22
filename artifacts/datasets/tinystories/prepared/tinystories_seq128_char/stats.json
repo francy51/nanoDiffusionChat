@@ -1,0 +1,10 @@
+{
+  "dataset_id": "tinystories_seq128_char",
+  "num_sequences": 151931,
+  "num_tokens": 19447282,
+  "num_train_sequences": 136737,
+  "num_val_sequences": 15193,
+  "seq_len": 128,
+  "source_name": "tinystories",
+  "vocab_size": 107
+}

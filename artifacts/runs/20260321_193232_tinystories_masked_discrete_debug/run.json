@@ -1,0 +1,7 @@
+{
+  "config_path": "artifacts/runs/20260321_193232_tinystories_masked_discrete_debug/config.json",
+  "dataset_id": "tinystories_seq128_char",
+  "preset_name": "debug",
+  "run_dir": "artifacts/runs/20260321_193232_tinystories_masked_discrete_debug",
+  "run_id": "20260321_193232_tinystories_masked_discrete_debug"
+}

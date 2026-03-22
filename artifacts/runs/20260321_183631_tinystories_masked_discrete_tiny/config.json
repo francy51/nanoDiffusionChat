@@ -1,0 +1,49 @@
+{
+  "dataset": {
+    "seq_len": 128,
+    "shard_size": null,
+    "source_name": "tinystories",
+    "text_column": null,
+    "tokenizer_name": "char",
+    "train_split": 0.9,
+    "val_split": 0.1
+  },
+  "diffusion": {
+    "algorithm": "masked_discrete",
+    "mask_token_id": 1,
+    "num_steps": 64,
+    "objective_name": "masked_ce",
+    "sampler_name": "full_refresh",
+    "schedule_name": "uniform"
+  },
+  "eval": {
+    "num_eval_batches": 4,
+    "num_qualitative_samples": 4,
+    "temperatures": [
+      0.0,
+      0.8,
+      1.0
+    ]
+  },
+  "model": {
+    "dropout": 0.1,
+    "hidden_dim": 256,
+    "max_seq_len": 128,
+    "num_heads": 4,
+    "num_layers": 4,
+    "vocab_size": 107
+  },
+  "training": {
+    "batch_size": 16,
+    "checkpoint_interval": 50,
+    "eval_interval": 50,
+    "grad_clip": 1.0,
+    "learning_rate": 0.0003,
+    "log_interval": 10,
+    "max_steps": 200,
+    "num_workers": 0,
+    "seed": 7,
+    "warmup_steps": 20,
+    "weight_decay": 0.01
+  }
+}

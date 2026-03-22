@@ -1,0 +1,15 @@
+{
+  "dataset_id": "tinystories_seq128_char",
+  "manifest_path": "artifacts/datasets/tinystories/prepared/tinystories_seq128_char/dataset_manifest.json",
+  "mask_token_id": 1,
+  "num_train_sequences": 136737,
+  "num_val_sequences": 15193,
+  "pad_token_id": 0,
+  "seq_len": 128,
+  "source_name": "tinystories",
+  "stats_path": "artifacts/datasets/tinystories/prepared/tinystories_seq128_char/stats.json",
+  "tokenizer_name": "char",
+  "train_path": "artifacts/datasets/tinystories/prepared/tinystories_seq128_char/train.pt",
+  "val_path": "artifacts/datasets/tinystories/prepared/tinystories_seq128_char/val.pt",
+  "vocab_size": 107
+}
