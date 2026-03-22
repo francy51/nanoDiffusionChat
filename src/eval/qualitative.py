@@ -2,11 +2,9 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 
-import torch
-
 from src.config.schema import ExperimentConfig
-from src.diffusion.samplers import FullRefreshSampler
 from src.models.denoiser import Denoiser
+from src.sampling.sampler import DiffusionSampler
 from src.tokenization.tokenizer import Tokenizer
 
 
@@ -24,21 +22,16 @@ def generate_qualitative_samples(
     prompts: list[str],
     device: str = "cpu",
 ) -> list[QualitativeSample]:
-    sampler = FullRefreshSampler(
-        mask_token_id=config.diffusion.mask_token_id,
-        device=device,
-    )
+    sampler = DiffusionSampler(model, config, device=device)
     samples: list[QualitativeSample] = []
     for prompt in prompts:
-        prompt_tokens = torch.tensor([tokenizer.encode(prompt)], dtype=torch.long)
+        prompt_tokens = sampler.model.new_tensor([tokenizer.encode(prompt)]).long()
         for temperature in config.eval.temperatures:
             final_step = None
             for step in sampler.sample(
-                model,
                 prompt_tokens=prompt_tokens,
-                num_new_tokens=config.dataset.seq_len // 2,
+                num_tokens=config.dataset.seq_len // 2,
                 temperature=temperature,
-                num_steps=config.diffusion.num_steps,
             ):
                 final_step = step
             if final_step is None:

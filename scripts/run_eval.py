@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 from src.config.io import load_experiment_config
 from src.data.batching import collate_token_batches
 from src.data.dataset import TokenDataset
-from src.eval.perplexity import compute_perplexity_proxy
+from src.eval.perplexity import compute_masked_reconstruction_ppl
 from src.models.factory import build_model_from_experiment
 from src.store import DatasetStore, RunStore
 from src.training.checkpoint import load_checkpoint
@@ -33,7 +33,7 @@ def main() -> None:
         collate_fn=collate_token_batches,
     )
     batch = next(iter(loader))
-    print(compute_perplexity_proxy(model, batch, config, get_device()))
+    print(compute_masked_reconstruction_ppl(model, batch, config, get_device()))
 
 
 if __name__ == "__main__":

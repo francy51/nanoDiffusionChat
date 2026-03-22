@@ -85,7 +85,7 @@ def _(action, num_tokens, prompt, run_id, temperature):
         if not rows
         else _mo.ui.table(rows)
     )
-    output
+    output  # noqa: B018
     return
 
 

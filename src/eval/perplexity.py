@@ -11,7 +11,7 @@ from src.diffusion.schedule import sample_timesteps
 from src.models.denoiser import Denoiser
 
 
-def compute_perplexity_proxy(
+def compute_masked_reconstruction_ppl(
     model: Denoiser,
     tokens: Tensor,
     config: ExperimentConfig,
@@ -33,3 +33,12 @@ def compute_perplexity_proxy(
     logits = model.to(device)(corrupted, timesteps)
     loss = masked_cross_entropy(logits, tokens, mask)
     return float(math.exp(float(loss.item())))
+
+
+def compute_perplexity_proxy(
+    model: Denoiser,
+    tokens: Tensor,
+    config: ExperimentConfig,
+    device: str = "cpu",
+) -> float:
+    return compute_masked_reconstruction_ppl(model, tokens, config, device)

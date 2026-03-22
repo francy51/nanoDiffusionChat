@@ -21,15 +21,14 @@ def _():
     from src.config.presets import list_presets
 
     preset = mo.ui.dropdown(options=list_presets(), value="tiny", label="Preset")
-    preset
-    return mo, preset
+    preset  # noqa: B018
+    return (preset,)
 
 
 @app.cell
-def _(mo, preset):
+def _(preset):
+    import marimo as _mo
     import torch
-
-
 
     from src.config.presets import build_experiment_config
     from src.models.factory import build_model_from_experiment
@@ -40,7 +39,7 @@ def _(mo, preset):
     tokens = torch.randint(0, config.model.vocab_size, (2, sample_len))
     timesteps = torch.randint(0, config.diffusion.num_steps, (2,))
     logits = model(tokens, timesteps)
-    mo.ui.table(
+    _mo.ui.table(
         [
             {
                 "preset": preset.value,
@@ -53,11 +52,6 @@ def _(mo, preset):
             }
         ]
     )
-    return
-
-
-@app.cell
-def _():
     return
 
 

@@ -35,3 +35,4 @@ uv run python scripts/run_prepare_data.py --seq-len 128
 5. `04_sample_lab.py`
 6. `05_eval_lab.py`
 7. `06_runs_dashboard.py`
+8. `07_chat_lab.py`

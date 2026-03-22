@@ -23,7 +23,7 @@ def _():
         value="linear",
         label="Schedule",
     )
-    schedule
+    schedule  # noqa: B018
     return schedule
 
 
