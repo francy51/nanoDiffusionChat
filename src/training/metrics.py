@@ -18,7 +18,7 @@ class TrainStepMetrics:
 class EvalMetrics:
     step: int
     masked_loss: float
-    perplexity_proxy: float | None
+    masked_reconstruction_ppl: float | None
 
     def to_dict(self) -> dict[str, float | int | None]:
         return asdict(self)

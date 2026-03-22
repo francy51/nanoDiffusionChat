@@ -46,7 +46,12 @@ class Trainer:
 
         self.optimizer = AdamW(
             self.model.parameters(),
-            lr=config.training.learning_rate,
+            lr=(
+                config.training.fine_tune_learning_rate
+                if config.training.resume_from_checkpoint
+                and config.training.fine_tune_learning_rate is not None
+                else config.training.learning_rate
+            ),
             weight_decay=config.training.weight_decay,
         )
         self.scheduler = self._create_scheduler(config.training.warmup_steps)
@@ -125,11 +130,13 @@ class Trainer:
             if count >= self.config.eval.num_eval_batches:
                 break
         mean_loss = total_loss / max(1, count)
-        perplexity_proxy = float(math.exp(mean_loss)) if mean_loss < 20 else None
+        masked_reconstruction_ppl = (
+            float(math.exp(mean_loss)) if mean_loss < 20 else None
+        )
         metrics = EvalMetrics(
             step=self.step,
             masked_loss=mean_loss,
-            perplexity_proxy=perplexity_proxy,
+            masked_reconstruction_ppl=masked_reconstruction_ppl,
         )
         if self.run_id and self.run_store:
             self.run_store.append_metric(self.run_id, "eval", metrics.to_dict())
