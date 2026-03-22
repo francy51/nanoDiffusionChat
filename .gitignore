@@ -48,6 +48,8 @@ dmypy.json
 # Project-specific
 checkpoints/
 data/
+!src/data/
+!src/data/*.py
 outputs/
 logs/
 *.jsonl
