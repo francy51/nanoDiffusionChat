@@ -9,6 +9,8 @@ class DatasetConfig:
     source_name: str = "tinystories"
     tokenizer_name: str = "char"
     seq_len: int = 256
+    format_name: Literal["plain_text", "chat_transcript"] = "plain_text"
+    chat_template_name: str | None = None
     train_split: float = 0.9
     val_split: float = 0.1
     text_column: str | None = None
@@ -76,7 +78,11 @@ class DiffusionConfig:
     schedule_name: Literal["uniform", "linear", "cosine"] = "uniform"
     mask_token_id: int = 1
     objective_name: Literal["masked_ce"] = "masked_ce"
-    sampler_name: Literal["full_refresh"] = "full_refresh"
+    sampler_name: Literal["full_refresh", "confidence_iterative"] = (
+        "confidence_iterative"
+    )
+    reveal_ratio_min: float = 0.1
+    reveal_ratio_max: float = 0.35
 
     def __post_init__(self) -> None:
         if self.num_steps <= 0:
@@ -85,6 +91,19 @@ class DiffusionConfig:
             raise ValueError(
                 f"mask_token_id must be non-negative, got {self.mask_token_id}"
             )
+        if not 0 < self.reveal_ratio_min <= 1:
+            raise ValueError(
+                f"reveal_ratio_min must be in (0, 1], got {self.reveal_ratio_min}"
+            )
+        if not 0 < self.reveal_ratio_max <= 1:
+            raise ValueError(
+                f"reveal_ratio_max must be in (0, 1], got {self.reveal_ratio_max}"
+            )
+        if self.reveal_ratio_min > self.reveal_ratio_max:
+            raise ValueError(
+                "reveal_ratio_min must be <= reveal_ratio_max, got "
+                f"{self.reveal_ratio_min} > {self.reveal_ratio_max}"
+            )
 
 
 @dataclass
@@ -92,6 +111,8 @@ class TrainingConfig:
     batch_size: int = 16
     learning_rate: float = 3e-4
     max_steps: int = 500
+    resume_from_checkpoint: str | None = None
+    fine_tune_learning_rate: float | None = None
     warmup_steps: int = 50
     weight_decay: float = 0.01
     grad_clip: float = 1.0
@@ -100,6 +121,7 @@ class TrainingConfig:
     log_interval: int = 10
     num_workers: int = 0
     seed: int = 7
+    freeze_embeddings: bool = False
 
     def __post_init__(self) -> None:
         if self.batch_size <= 0:
@@ -113,6 +135,14 @@ class TrainingConfig:
         if self.warmup_steps < 0:
             raise ValueError(
                 f"warmup_steps must be non-negative, got {self.warmup_steps}"
+            )
+        if (
+            self.fine_tune_learning_rate is not None
+            and self.fine_tune_learning_rate <= 0
+        ):
+            raise ValueError(
+                "fine_tune_learning_rate must be positive, got "
+                f"{self.fine_tune_learning_rate}"
             )
 
 

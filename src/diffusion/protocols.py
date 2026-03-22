@@ -17,6 +17,8 @@ class SampleStep:
     timestep: int
     tokens: Tensor
     newly_filled_mask: Tensor | None
+    num_masked_remaining: int
+    num_revealed: int
 
 
 class ReverseSampler(Protocol):

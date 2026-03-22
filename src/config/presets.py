@@ -32,6 +32,58 @@ def build_experiment_config(name: str) -> ExperimentConfig:
             ),
             eval=EvalConfig(num_eval_batches=2, num_qualitative_samples=2),
         ),
+        "story_base": ExperimentConfig(
+            dataset=DatasetConfig(seq_len=128, format_name="plain_text"),
+            model=ModelConfig(
+                vocab_size=256,
+                hidden_dim=256,
+                num_layers=4,
+                num_heads=4,
+                max_seq_len=128,
+            ),
+            diffusion=DiffusionConfig(
+                num_steps=64,
+                mask_token_id=1,
+                sampler_name="confidence_iterative",
+            ),
+            training=TrainingConfig(
+                batch_size=16,
+                max_steps=200,
+                warmup_steps=20,
+                eval_interval=50,
+                checkpoint_interval=50,
+                log_interval=10,
+            ),
+        ),
+        "chat_sft_small": ExperimentConfig(
+            dataset=DatasetConfig(
+                source_name="instruction",
+                seq_len=128,
+                format_name="chat_transcript",
+                chat_template_name="basic_chat",
+            ),
+            model=ModelConfig(
+                vocab_size=256,
+                hidden_dim=256,
+                num_layers=4,
+                num_heads=4,
+                max_seq_len=128,
+            ),
+            diffusion=DiffusionConfig(
+                num_steps=64,
+                mask_token_id=1,
+                sampler_name="confidence_iterative",
+            ),
+            training=TrainingConfig(
+                batch_size=16,
+                max_steps=100,
+                warmup_steps=10,
+                eval_interval=25,
+                checkpoint_interval=25,
+                log_interval=10,
+                fine_tune_learning_rate=1e-4,
+            ),
+        ),
         "tiny": ExperimentConfig(
             dataset=DatasetConfig(seq_len=128),
             model=ModelConfig(
@@ -77,4 +129,4 @@ def build_experiment_config(name: str) -> ExperimentConfig:
 
 
 def list_presets() -> list[str]:
-    return ["debug", "tiny", "small"]
+    return ["debug", "story_base", "chat_sft_small", "tiny", "small"]

@@ -18,6 +18,7 @@ class DatasetArtifact:
     dataset_id: str
     source_name: str
     tokenizer_name: str
+    format_name: str
     seq_len: int
     vocab_size: int
     mask_token_id: int
@@ -56,6 +57,7 @@ class DatasetStore:
             dataset_id=manifest.dataset_id,
             source_name=manifest.source_name,
             tokenizer_name=manifest.tokenizer_name,
+            format_name=manifest.format_name,
             seq_len=manifest.seq_len,
             vocab_size=manifest.vocab_size,
             mask_token_id=manifest.mask_token_id,

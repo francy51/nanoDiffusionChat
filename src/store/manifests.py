@@ -12,6 +12,7 @@ class DatasetManifest:
     dataset_id: str
     source_name: str
     tokenizer_name: str
+    format_name: str
     seq_len: int
     train_path: str
     val_path: str
