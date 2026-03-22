@@ -296,23 +296,32 @@ def _(mo, result_rows: list[dict[str, float | int | None]]):
     import altair as alt
     import polars as pl
 
-    result_df = pl.DataFrame(result_rows)
+    if not result_rows:
+        chart_output = mo.md("No chart yet. Run training to populate step metrics.")
+    else:
+        result_df = pl.DataFrame(result_rows)
+        required_columns = {"step", "loss", "tokens_per_sec"}
+        if not required_columns.issubset(set(result_df.columns)):
+            chart_output = mo.md(
+                "Training metrics are incomplete, so the chart is unavailable."
+            )
+        else:
+            # Create an Altair chart
+            _chart = (
+                alt.Chart(result_df)
+                .mark_point()
+                .encode(
+                    x="step",
+                    y="loss",
+                    color="tokens_per_sec",
+                )
+                .properties(height=450)
+            )
 
-    # Create an Altair chart
-    _chart = (
-        alt.Chart(result_df)
-        .mark_point()
-        .encode(
-            x="step",
-            y="loss",
-            color="tokens_per_sec",
-        )
-        .properties(height=450)
-    )
+            # Make it reactive ⚡
+            chart_output = mo.ui.altair_chart(_chart)
 
-    # Make it reactive ⚡
-    chart = mo.ui.altair_chart(_chart)
-    chart  # noqa: B018
+    chart_output  # noqa: B018
     return
 
 

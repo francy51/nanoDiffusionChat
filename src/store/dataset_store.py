@@ -38,15 +38,23 @@ class DatasetStore:
         artifacts: list[DatasetArtifact] = []
         for manifest_path in self.root.glob("*/prepared/*/dataset_manifest.json"):
             manifest = dataset_manifest_from_dict(load_manifest(manifest_path))
-            artifacts.append(self._artifact_from_manifest(manifest))
+            artifact = self._artifact_from_manifest(manifest)
+            if self._artifact_exists(artifact):
+                artifacts.append(artifact)
         return sorted(artifacts, key=lambda item: item.dataset_id)
 
     def get(self, dataset_id: str) -> DatasetArtifact:
         matches = list(self.root.glob(f"*/prepared/{dataset_id}/dataset_manifest.json"))
         if not matches:
             raise FileNotFoundError(f"Unknown dataset artifact: {dataset_id}")
-        manifest = dataset_manifest_from_dict(load_manifest(matches[0]))
-        return self._artifact_from_manifest(manifest)
+        for match in matches:
+            manifest = dataset_manifest_from_dict(load_manifest(match))
+            artifact = self._artifact_from_manifest(manifest)
+            if self._artifact_exists(artifact):
+                return artifact
+        raise FileNotFoundError(
+            f"Dataset artifact manifest exists but files are missing: {dataset_id}"
+        )
 
     def create_prepared_dataset(self, config: DatasetConfig) -> DatasetArtifact:
         manifest = prepare_dataset(config)
@@ -66,4 +74,12 @@ class DatasetStore:
             val_path=Path(manifest.val_path),
             stats_path=Path(manifest.stats_path),
             manifest_path=Path(manifest.manifest_path),
+        )
+
+    def _artifact_exists(self, artifact: DatasetArtifact) -> bool:
+        return (
+            artifact.train_path.exists()
+            and artifact.val_path.exists()
+            and artifact.stats_path.exists()
+            and artifact.manifest_path.exists()
         )

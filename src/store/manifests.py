@@ -47,7 +47,9 @@ def dataset_manifest_to_dict(manifest: DatasetManifest) -> dict[str, Any]:
 
 
 def dataset_manifest_from_dict(payload: dict[str, Any]) -> DatasetManifest:
-    return DatasetManifest(**payload)
+    upgraded_payload = dict(payload)
+    upgraded_payload.setdefault("format_name", "plain_text")
+    return DatasetManifest(**upgraded_payload)
 
 
 def run_manifest_to_dict(manifest: RunManifest) -> dict[str, Any]:
